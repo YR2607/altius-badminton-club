@@ -3,6 +3,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Altius Brand Colors */
+  --altius-blue: #1E40AF;
+  --altius-lime: #84CC16;
+  --altius-orange: #EA580C;
+  --altius-black: #000000;
+
+  /* Additional shades */
+  --altius-blue-light: #3B82F6;
+  --altius-blue-dark: #1E3A8A;
+  --altius-lime-light: #A3E635;
+  --altius-lime-dark: #65A30D;
+  --altius-orange-light: #FB923C;
+  --altius-orange-dark: #C2410C;
 }
 
 @theme inline {
@@ -10,6 +24,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Altius Brand Colors */
+  --color-altius-blue: var(--altius-blue);
+  --color-altius-lime: var(--altius-lime);
+  --color-altius-orange: var(--altius-orange);
+  --color-altius-black: var(--altius-black);
+  --color-altius-blue-light: var(--altius-blue-light);
+  --color-altius-blue-dark: var(--altius-blue-dark);
+  --color-altius-lime-light: var(--altius-lime-light);
+  --color-altius-lime-dark: var(--altius-lime-dark);
+  --color-altius-orange-light: var(--altius-orange-light);
+  --color-altius-orange-dark: var(--altius-orange-dark);
 }
 
 @media (prefers-color-scheme: dark) {

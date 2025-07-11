@@ -1,103 +1,348 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import HallCard from '@/components/HallCard';
+import BookingCalendar from '@/components/BookingCalendar';
+import BookingForm from '@/components/BookingForm';
+import { Star, Users, Clock, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
+
+interface BookingData {
+  name: string;
+  phone: string;
+  email?: string;
+  hallId: number;
+  date: Date;
+  time: string;
+  court: number;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [selectedHall, setSelectedHall] = useState<number | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<{
+    date: Date;
+    time: string;
+    court: number;
+  } | null>(null);
+  const [bookingComplete, setBookingComplete] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const halls = [
+    {
+      id: 1,
+      name: 'Зал 1',
+      courts: 3,
+      image: '/hall1.jpg',
+      description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
+      features: [
+        'Профессиональное покрытие',
+        'Отличное освещение',
+        'Кондиционирование воздуха',
+        'Раздевалки с душем'
+      ],
+      pricePerHour: 150
+    },
+    {
+      id: 2,
+      name: 'Зал 2',
+      courts: 7,
+      image: '/hall2.jpg',
+      description: 'Большой зал с семью кортами для турниров и тренировок',
+      features: [
+        'Турнирные корты',
+        'Трибуны для зрителей',
+        'Профессиональная разметка',
+        'Система вентиляции',
+        'Звуковая система'
+      ],
+      pricePerHour: 180
+    },
+    {
+      id: 3,
+      name: 'Зал 3',
+      courts: 7,
+      image: '/hall3.jpg',
+      description: 'Современный зал с новейшим оборудованием',
+      features: [
+        'Новейшее покрытие',
+        'LED освещение',
+        'Климат-контроль',
+        'VIP раздевалки',
+        'Зона отдыха'
+      ],
+      pricePerHour: 200
+    }
+  ];
+
+  const handleHallSelect = (hallId: number) => {
+    setSelectedHall(hallId);
+    setSelectedSlot(null);
+  };
+
+  const handleSlotSelect = (date: Date, time: string, court: number) => {
+    setSelectedSlot({ date, time, court });
+  };
+
+  const handleBookingSubmit = (data: BookingData) => {
+    console.log('Booking submitted:', data);
+    setBookingComplete(true);
+    // Здесь будет отправка данных на сервер
+  };
+
+  const handleBookingCancel = () => {
+    setSelectedSlot(null);
+    setSelectedHall(null);
+  };
+
+  const resetBooking = () => {
+    setBookingComplete(false);
+    setSelectedSlot(null);
+    setSelectedHall(null);
+  };
+
+  if (bookingComplete) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Бронирование успешно!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Ваша заявка принята. Мы свяжемся с вами в ближайшее время для подтверждения.
+            </p>
+            <button
+              onClick={resetBooking}
+              className="bg-altius-blue hover:bg-altius-blue-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
+              Сделать новое бронирование
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Booking flow
+  if (selectedSlot && selectedHall) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <BookingForm
+            hallId={selectedHall}
+            date={selectedSlot.date}
+            time={selectedSlot.time}
+            court={selectedSlot.court}
+            onSubmit={handleBookingSubmit}
+            onCancel={handleBookingCancel}
+          />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (selectedHall) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mb-6">
+            <button
+              onClick={() => setSelectedHall(null)}
+              className="text-altius-blue hover:text-altius-blue-dark font-medium"
+            >
+              ← Назад к выбору зала
+            </button>
+          </div>
+          <BookingCalendar
+            hallId={selectedHall}
+            onSlotSelect={handleSlotSelect}
+          />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      {/* Hero Section */}
+      <section id="home" className="bg-gradient-to-br from-altius-blue via-altius-lime to-altius-orange text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Бадминтонный клуб
+              <span className="block text-altius-lime-light">Altius</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
+              Современные залы с профессиональными кортами.
+              Удобная система онлайн бронирования. 17 кортов в 3 залах.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="#halls"
+                className="bg-white text-altius-blue font-semibold py-3 px-8 rounded-lg hover:bg-altius-lime hover:text-white transition-colors"
+              >
+                Посмотреть залы
+              </a>
+              <a
+                href="#booking"
+                className="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-altius-orange transition-colors"
+              >
+                Забронировать
+              </a>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Почему выбирают нас
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Мы предлагаем лучшие условия для игры в бадминтон в Кишиневе
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="bg-altius-blue/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-altius-blue" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">17 кортов</h3>
+              <p className="text-gray-600">
+                3 современных зала с профессиональными кортами для игры и тренировок
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-altius-lime/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-8 h-8 text-altius-lime" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Удобное время</h3>
+              <p className="text-gray-600">
+                Работаем с 6:00 до 23:00 в будни и с 8:00 до 22:00 в выходные
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-altius-orange/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-altius-orange" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Высокое качество</h3>
+              <p className="text-gray-600">
+                Профессиональное покрытие, отличное освещение и климат-контроль
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Halls Section */}
+      <section id="halls" className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Наши залы
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Выберите подходящий зал для вашей игры
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {halls.map((hall) => (
+              <HallCard
+                key={hall.id}
+                {...hall}
+                onBookClick={handleHallSelect}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Контакты
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Свяжитесь с нами для получения дополнительной информации
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Contact Info */}
+            <div>
+              <h3 className="text-xl font-semibold mb-6">Как нас найти</h3>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <MapPin className="w-5 h-5 text-altius-blue mt-1 mr-3" />
+                  <div>
+                    <div className="font-medium">Адрес</div>
+                    <div className="text-gray-600">ул. Примерная, 123, Кишинев, Молдова</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Phone className="w-5 h-5 text-altius-lime mt-1 mr-3" />
+                  <div>
+                    <div className="font-medium">Телефон</div>
+                    <div className="text-gray-600">+373 XX XXX XXX</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Mail className="w-5 h-5 text-altius-orange mt-1 mr-3" />
+                  <div>
+                    <div className="font-medium">Email</div>
+                    <div className="text-gray-600">info@altius.md</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <Clock className="w-5 h-5 text-altius-blue mt-1 mr-3" />
+                  <div>
+                    <div className="font-medium">Режим работы</div>
+                    <div className="text-gray-600">
+                      <div>Пн-Пт: 06:00 - 23:00</div>
+                      <div>Сб-Вс: 08:00 - 22:00</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Map Placeholder */}
+            <div>
+              <h3 className="text-xl font-semibold mb-6">Расположение</h3>
+              <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <MapPin className="w-12 h-12 mx-auto mb-2" />
+                  <div>Карта будет здесь</div>
+                  <div className="text-sm">Кишинев, Молдова</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }

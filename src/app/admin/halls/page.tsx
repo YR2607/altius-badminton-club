@@ -41,18 +41,37 @@ export default function AdminHallsPage() {
   }, []);
 
   const fetchHalls = async () => {
+    // For demo purposes, use fallback data immediately
+    // In production, you would try Supabase first
+    console.log('Loading halls data...');
+
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
-      const { data, error } = await supabase
+      // Try Supabase with short timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 2000)
+      );
+
+      const supabasePromise = supabase
         .from('halls')
         .select('*')
         .order('id');
 
+      const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
+
       if (error) throw error;
-      setHalls(data || []);
+      if (data && data.length > 0) {
+        setHalls(data);
+        return;
+      }
     } catch (error) {
-      console.error('Error fetching halls:', error);
-      // Fallback data if database is not available
-      setHalls([
+      console.error('Supabase not available, using fallback data:', error);
+    }
+
+    // Fallback data
+    setHalls([
         {
           id: 1,
           name: 'Зал 1',
@@ -99,9 +118,8 @@ export default function AdminHallsPage() {
           is_active: true
         }
       ]);
-    } finally {
-      setLoading(false);
-    }
+
+    setLoading(false);
   };
 
   const navigateToHallEdit = (hallId: number) => {

@@ -52,18 +52,33 @@ export default function AdminHallEditPage() {
   }, [hallId]);
 
   const fetchHall = async () => {
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     try {
-      const { data, error } = await supabase
+      // Try Supabase with short timeout
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 2000)
+      );
+
+      const supabasePromise = supabase
         .from('halls')
         .select('*')
         .eq('id', hallId)
         .single();
 
+      const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
+
       if (error) throw error;
-      setHall(data);
+      if (data) {
+        setHall(data);
+        return;
+      }
     } catch (error) {
-      console.error('Error fetching hall:', error);
-      // Fallback data
+      console.error('Supabase not available, using fallback data:', error);
+    }
+
+    // Fallback data
       const fallbackHalls = [
         {
           id: 1,

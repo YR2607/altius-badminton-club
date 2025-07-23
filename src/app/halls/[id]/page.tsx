@@ -19,41 +19,33 @@ import {
 interface HallData {
   id: number;
   name: string;
-  courts: number;
+  courts_count: number;
   description: string;
-  detailedDescription: string;
+  detailed_description: string;
   features: string[];
-  pricePerHour: number;
+  price_per_hour: number;
   images: string[];
   videos: string[];
-  specifications: {
-    area: string;
-    height: string;
-    flooring: string;
-    lighting: string;
-    ventilation: string;
-  };
+  specifications: Record<string, string>;
   amenities: string[];
-  workingHours: {
-    weekdays: string;
-    weekends: string;
-  };
+  working_hours: Record<string, string>;
+  is_active: boolean;
 }
 
 const hallsData: Record<number, HallData> = {
   1: {
     id: 1,
     name: 'Зал 1',
-    courts: 3,
+    courts_count: 3,
     description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
-    detailedDescription: 'Зал 1 - это идеальное место для начинающих игроков и любителей бадминтона. Компактный и уютный зал оборудован тремя профессиональными кортами с качественным покрытием. Отличное освещение и система кондиционирования обеспечивают комфортные условия для игры в любое время года.',
+    detailed_description: 'Зал 1 - это идеальное место для начинающих игроков и любителей бадминтона. Компактный и уютный зал оборудован тремя профессиональными кортами с качественным покрытием. Отличное освещение и система кондиционирования обеспечивают комфортные условия для игры в любое время года.',
     features: [
       'Профессиональное покрытие',
       'Отличное освещение',
       'Кондиционирование воздуха',
       'Раздевалки с душем'
     ],
-    pricePerHour: 150,
+    price_per_hour: 150,
     images: [
       '/api/placeholder/800/600?text=Зал+1+Общий+вид',
       '/api/placeholder/800/600?text=Зал+1+Корт+1',
@@ -80,17 +72,18 @@ const hallsData: Record<number, HallData> = {
       'Wi-Fi',
       'Парковка'
     ],
-    workingHours: {
+    working_hours: {
       weekdays: '06:00 - 23:00',
       weekends: '08:00 - 22:00'
-    }
+    },
+    is_active: true
   },
   2: {
     id: 2,
     name: 'Зал 2',
-    courts: 7,
+    courts_count: 7,
     description: 'Большой зал с семью кортами для турниров и тренировок',
-    detailedDescription: 'Зал 2 - наш главный турнирный зал, оборудованный семью профессиональными кортами. Здесь проводятся официальные соревнования и тренировки спортсменов высокого уровня. Зал оснащен трибунами для зрителей и современной звуковой системой.',
+    detailed_description: 'Зал 2 - наш главный турнирный зал, оборудованный семью профессиональными кортами. Здесь проводятся официальные соревнования и тренировки спортсменов высокого уровня. Зал оснащен трибунами для зрителей и современной звуковой системой.',
     features: [
       'Турнирные корты',
       'Трибуны для зрителей',
@@ -98,7 +91,7 @@ const hallsData: Record<number, HallData> = {
       'Система вентиляции',
       'Звуковая система'
     ],
-    pricePerHour: 180,
+    price_per_hour: 180,
     images: [
       '/api/placeholder/800/600?text=Зал+2+Турнирный+вид',
       '/api/placeholder/800/600?text=Зал+2+Трибуны',
@@ -128,17 +121,18 @@ const hallsData: Record<number, HallData> = {
       'Wi-Fi',
       'Охраняемая парковка'
     ],
-    workingHours: {
+    working_hours: {
       weekdays: '06:00 - 23:00',
       weekends: '08:00 - 22:00'
-    }
+    },
+    is_active: true
   },
   3: {
     id: 3,
     name: 'Зал 3',
-    courts: 7,
+    courts_count: 7,
     description: 'Современный зал с новейшим оборудованием',
-    detailedDescription: 'Зал 3 - самый современный зал клуба с новейшими технологиями. Семь кортов оборудованы инновационным LED освещением и системой климат-контроля. VIP раздевалки и зона отдыха создают атмосферу премиум-класса.',
+    detailed_description: 'Зал 3 - самый современный зал клуба с новейшими технологиями. Семь кортов оборудованы инновационным LED освещением и системой климат-контроля. VIP раздевалки и зона отдыха создают атмосферу премиум-класса.',
     features: [
       'Новейшее покрытие',
       'LED освещение',
@@ -146,7 +140,7 @@ const hallsData: Record<number, HallData> = {
       'VIP раздевалки',
       'Зона отдыха'
     ],
-    pricePerHour: 200,
+    price_per_hour: 200,
     images: [
       '/api/placeholder/800/600?text=Зал+3+Премиум+вид',
       '/api/placeholder/800/600?text=Зал+3+LED+освещение',
@@ -176,10 +170,11 @@ const hallsData: Record<number, HallData> = {
       'Premium Wi-Fi',
       'Valet парковка'
     ],
-    workingHours: {
+    working_hours: {
       weekdays: '06:00 - 23:00',
       weekends: '08:00 - 22:00'
-    }
+    },
+    is_active: true
   }
 };
 
@@ -253,14 +248,14 @@ export default function HallPage() {
             <div className="flex items-center space-x-6 text-blue-100">
               <div className="flex items-center">
                 <Users className="w-5 h-5 mr-2" />
-                {hall.courts} кортов
+                {hall.courts_count} кортов
               </div>
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
                 Кишинев
               </div>
               <div className="text-2xl font-bold text-white">
-                {hall.pricePerHour} лей/час
+                {hall.price_per_hour} лей/час
               </div>
             </div>
           </div>
@@ -285,7 +280,7 @@ export default function HallPage() {
             <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
               <h3 className="text-xl font-bold text-gray-900 mb-4">О зале</h3>
               <p className="text-gray-600 leading-relaxed mb-6">
-                {hall.detailedDescription}
+                {hall.detailed_description}
               </p>
 
               {/* Features */}
@@ -338,7 +333,7 @@ export default function HallPage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Бронирование</h3>
                 <div className="text-center mb-4">
                   <div className="text-3xl font-bold text-blue-600 mb-2">
-                    {hall.pricePerHour} лей
+                    {hall.price_per_hour} лей
                   </div>
                   <div className="text-gray-600">за час</div>
                 </div>
@@ -392,14 +387,14 @@ export default function HallPage() {
                   <Clock className="w-4 h-4 text-gray-400 mr-2" />
                   <div>
                     <div className="font-medium">Пн-Пт:</div>
-                    <div className="text-gray-600">{hall.workingHours.weekdays}</div>
+                    <div className="text-gray-600">{hall.working_hours.weekdays}</div>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Clock className="w-4 h-4 text-gray-400 mr-2" />
                   <div>
                     <div className="font-medium">Сб-Вс:</div>
-                    <div className="text-gray-600">{hall.workingHours.weekends}</div>
+                    <div className="text-gray-600">{hall.working_hours.weekends}</div>
                   </div>
                 </div>
               </div>

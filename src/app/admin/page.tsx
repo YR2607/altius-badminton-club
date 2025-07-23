@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { 
-  Calendar, 
-  Users, 
-  Clock, 
+import {
+  Calendar,
+  Users,
+  Clock,
   Phone,
   Mail,
   CheckCircle,
@@ -14,7 +14,9 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Filter
+  Filter,
+  Settings,
+  Building
 } from 'lucide-react';
 
 interface Booking {
@@ -137,6 +139,48 @@ export default function AdminPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Быстрые действия */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <a
+            href="/admin/halls"
+            className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-l-4 border-altius-blue"
+          >
+            <div className="flex items-center">
+              <div className="bg-altius-blue/10 p-3 rounded-lg">
+                <Building className="w-6 h-6 text-altius-blue" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Управление залами</h3>
+                <p className="text-gray-600">Редактировать информацию о залах</p>
+              </div>
+            </div>
+          </a>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-altius-lime">
+            <div className="flex items-center">
+              <div className="bg-altius-lime/10 p-3 rounded-lg">
+                <Calendar className="w-6 h-6 text-altius-lime" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Бронирования</h3>
+                <p className="text-gray-600">Управление бронированиями</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-altius-orange">
+            <div className="flex items-center">
+              <div className="bg-altius-orange/10 p-3 rounded-lg">
+                <Settings className="w-6 h-6 text-altius-orange" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Настройки</h3>
+                <p className="text-gray-600">Общие настройки системы</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import HallCard from '@/components/HallCard';
 import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
 import { Star, Users, Clock, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface BookingData {
   name: string;
@@ -18,6 +19,16 @@ interface BookingData {
   court: number;
 }
 
+interface Hall {
+  id: number;
+  name: string;
+  courts_count: number;
+  price_per_hour: number;
+  description: string;
+  features: string[];
+  images?: string[];
+}
+
 export default function Home() {
   const [selectedHall, setSelectedHall] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<{
@@ -26,53 +37,56 @@ export default function Home() {
     court: number;
   } | null>(null);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [halls, setHalls] = useState<Hall[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const halls = [
-    {
-      id: 1,
-      name: 'Зал 1',
-      courts: 3,
-      image: '/hall1.jpg',
-      description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
-      features: [
-        'Профессиональное покрытие',
-        'Отличное освещение',
-        'Кондиционирование воздуха',
-        'Раздевалки с душем'
-      ],
-      pricePerHour: 150
-    },
-    {
-      id: 2,
-      name: 'Зал 2',
-      courts: 7,
-      image: '/hall2.jpg',
-      description: 'Большой зал с семью кортами для турниров и тренировок',
-      features: [
-        'Турнирные корты',
-        'Трибуны для зрителей',
-        'Профессиональная разметка',
-        'Система вентиляции',
-        'Звуковая система'
-      ],
-      pricePerHour: 180
-    },
-    {
-      id: 3,
-      name: 'Зал 3',
-      courts: 7,
-      image: '/hall3.jpg',
-      description: 'Современный зал с новейшим оборудованием',
-      features: [
-        'Новейшее покрытие',
-        'LED освещение',
-        'Климат-контроль',
-        'VIP раздевалки',
-        'Зона отдыха'
-      ],
-      pricePerHour: 200
+  useEffect(() => {
+    fetchHalls();
+  }, []);
+
+  const fetchHalls = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('halls')
+        .select('*')
+        .eq('is_active', true)
+        .order('id');
+
+      if (error) throw error;
+      setHalls(data || []);
+    } catch (error) {
+      console.error('Error fetching halls:', error);
+      // Fallback data if database is not available
+      setHalls([
+        {
+          id: 1,
+          name: 'Зал 1',
+          courts_count: 3,
+          price_per_hour: 150,
+          description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
+          features: ['Профессиональное покрытие', 'Отличное освещение', 'Кондиционирование воздуха', 'Раздевалки с душем']
+        },
+        {
+          id: 2,
+          name: 'Зал 2',
+          courts_count: 7,
+          price_per_hour: 180,
+          description: 'Большой зал с семью кортами для турниров и тренировок',
+          features: ['Турнирные корты', 'Трибуны для зрителей', 'Профессиональная разметка', 'Система вентиляции', 'Звуковая система']
+        },
+        {
+          id: 3,
+          name: 'Зал 3',
+          courts_count: 7,
+          price_per_hour: 200,
+          description: 'Современный зал с новейшим оборудованием',
+          features: ['Новейшее покрытие', 'LED освещение', 'Климат-контроль', 'VIP раздевалки', 'Зона отдыха']
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const handleHallSelect = (hallId: number) => {
     setSelectedHall(hallId);
@@ -261,15 +275,28 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {halls.map((hall) => (
-              <HallCard
-                key={hall.id}
-                {...hall}
-                onBookClick={handleHallSelect}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-altius-blue mx-auto"></div>
+              <p className="mt-4 text-gray-600">Загрузка залов...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {halls.map((hall) => (
+                <HallCard
+                  key={hall.id}
+                  id={hall.id}
+                  name={hall.name}
+                  courts={hall.courts_count}
+                  image=""
+                  description={hall.description}
+                  features={hall.features}
+                  pricePerHour={hall.price_per_hour}
+                  onBookClick={handleHallSelect}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

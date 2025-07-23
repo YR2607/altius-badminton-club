@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import Link from 'next/link';
 import {
   Calendar,
   Users,
@@ -141,7 +142,7 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Быстрые действия */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <a
+          <Link
             href="/admin/halls"
             className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-l-4 border-altius-blue"
           >
@@ -154,7 +155,7 @@ export default function AdminPage() {
                 <p className="text-gray-600">Редактировать информацию о залах</p>
               </div>
             </div>
-          </a>
+          </Link>
 
           <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-altius-lime">
             <div className="flex items-center">

@@ -49,7 +49,7 @@ export default function AdminHallEditPage() {
 
   useEffect(() => {
     fetchHall();
-  }, [hallId]);
+  }, [hallId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchHall = async () => {
     // Simulate loading delay
@@ -67,7 +67,8 @@ export default function AdminHallEditPage() {
         .eq('id', hallId)
         .single();
 
-      const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
+      const result = await Promise.race([supabasePromise, timeoutPromise]);
+      const { data, error } = result as { data: Hall | null; error: Error | null };
 
       if (error) throw error;
       if (data) {
@@ -133,9 +134,8 @@ export default function AdminHallEditPage() {
       } else {
         router.push('/admin/halls');
       }
-    } finally {
-      setLoading(false);
-    }
+
+    setLoading(false);
   };
 
   const handleSave = async () => {

@@ -59,7 +59,8 @@ export default function AdminHallsPage() {
         .select('*')
         .order('id');
 
-      const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
+      const result = await Promise.race([supabasePromise, timeoutPromise]);
+      const { data, error } = result as { data: Hall[] | null; error: Error | null };
 
       if (error) throw error;
       if (data && data.length > 0) {

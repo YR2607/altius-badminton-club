@@ -1,14 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key';
-
 // Check if Supabase is properly configured
 const isSupabaseConfigured =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
   !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project') &&
-  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('your-anon-key');
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('your-anon-key') &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('demo');
+
+// Use dummy values if not configured to avoid network requests
+const supabaseUrl = isSupabaseConfigured
+  ? process.env.NEXT_PUBLIC_SUPABASE_URL!
+  : 'https://localhost:54321'; // Local dummy URL that won't resolve
+
+const supabaseAnonKey = isSupabaseConfigured
+  ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  : 'dummy-key';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

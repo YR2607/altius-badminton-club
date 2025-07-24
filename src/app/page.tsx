@@ -7,7 +7,7 @@ import HallCard from '@/components/HallCard';
 import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
 import { Star, Users, Clock, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseAvailable } from '@/lib/supabase';
 
 interface BookingData {
   name: string;
@@ -45,19 +45,43 @@ export default function Home() {
   }, []);
 
   const fetchHalls = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('halls')
-        .select('*')
-        .eq('is_active', true)
-        .order('id');
+    console.log('Loading halls data...');
 
-      if (error) throw error;
-      setHalls(data || []);
-    } catch (error) {
-      console.error('Error fetching halls:', error);
-      // Fallback data if database is not available
-      setHalls([
+    // Simulate loading delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if Supabase is configured
+    if (isSupabaseAvailable()) {
+      try {
+        // Try Supabase with short timeout
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), 2000)
+        );
+
+        const supabasePromise = supabase
+          .from('halls')
+          .select('*')
+          .eq('is_active', true)
+          .order('id');
+
+        const result = await Promise.race([supabasePromise, timeoutPromise]);
+        const { data, error } = result as { data: Hall[] | null; error: Error | null };
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setHalls(data);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log('Supabase connection failed, using demo data');
+      }
+    } else {
+      console.log('Using demo data (Supabase not configured)');
+    }
+
+    // Fallback data
+    setHalls([
         {
           id: 1,
           name: 'Зал 1',
@@ -83,9 +107,8 @@ export default function Home() {
           features: ['Новейшее покрытие', 'LED освещение', 'Климат-контроль', 'VIP раздевалки', 'Зона отдыха']
         }
       ]);
-    } finally {
-      setLoading(false);
-    }
+
+    setLoading(false);
   };
 
   const handleHallSelect = (hallId: number) => {

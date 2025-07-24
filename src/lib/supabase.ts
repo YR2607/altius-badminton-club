@@ -1,9 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-key';
+
+// Check if Supabase is properly configured
+const isSupabaseConfigured =
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project') &&
+  !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('your-anon-key');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Helper function to check if Supabase is available
+export const isSupabaseAvailable = () => isSupabaseConfigured;
 
 // Database types
 export interface Booking {

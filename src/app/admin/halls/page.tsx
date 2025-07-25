@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { supabase, isSupabaseAvailable } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import {
   Edit,
   Eye,
@@ -41,38 +41,48 @@ export default function AdminHallsPage() {
   }, []);
 
   const fetchHalls = async () => {
-    // For demo purposes, use fallback data immediately
-    // In production, you would try Supabase first
     console.log('Loading halls data...');
-
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    setLoading(true);
 
     try {
-      // Try Supabase with short timeout
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 2000)
-      );
-
-      const supabasePromise = supabase
+      const { data, error } = await supabase
         .from('halls')
         .select('*')
         .order('id');
 
-      const result = await Promise.race([supabasePromise, timeoutPromise]);
-      const { data, error } = result as { data: Hall[] | null; error: Error | null };
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
-      if (error) throw error;
       if (data && data.length > 0) {
+        console.log('Loaded halls from Supabase:', data.length);
         setHalls(data);
-        return;
+      } else {
+        console.log('No halls found in database, using fallback data');
+        // Fallback data if database is empty
+        setHalls([
+          {
+            id: 1,
+            name: 'Зал 1',
+            courts_count: 3,
+            price_per_hour: 150,
+            description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
+            detailed_description: 'Зал 1 - это идеальное место для начинающих игроков и любителей бадминтона.',
+            features: ['Профессиональное покрытие', 'Отличное освещение', 'Кондиционирование воздуха'],
+            images: [],
+            videos: [],
+            specifications: { area: '300 м²', height: '9 м' },
+            amenities: ['Раздевалки', 'Душевые', 'Парковка'],
+            working_hours: { weekdays: '06:00 - 23:00', weekends: '08:00 - 22:00' },
+            is_active: true
+          }
+        ]);
       }
     } catch (error) {
-      console.error('Supabase not available, using fallback data:', error);
-    }
-
-    // Fallback data
-    setHalls([
+      console.error('Error loading halls:', error);
+      // Fallback data on error
+      setHalls([
         {
           id: 1,
           name: 'Зал 1',
@@ -119,6 +129,7 @@ export default function AdminHallsPage() {
           is_active: true
         }
       ]);
+    }
 
     setLoading(false);
   };

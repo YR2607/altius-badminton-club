@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
 import MediaGallery from '@/components/MediaGallery';
+import { supabase } from '@/lib/supabase';
 import {
   ArrowLeft,
   Users,
@@ -32,164 +33,70 @@ interface HallData {
   is_active: boolean;
 }
 
-const hallsData: Record<number, HallData> = {
-  1: {
-    id: 1,
-    name: 'Зал 1',
-    courts_count: 3,
-    description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
-    detailed_description: 'Зал 1 - это идеальное место для начинающих игроков и любителей бадминтона. Компактный и уютный зал оборудован тремя профессиональными кортами с качественным покрытием. Отличное освещение и система кондиционирования обеспечивают комфортные условия для игры в любое время года.',
-    features: [
-      'Профессиональное покрытие',
-      'Отличное освещение',
-      'Кондиционирование воздуха',
-      'Раздевалки с душем'
-    ],
-    price_per_hour: 150,
-    images: [
-      '/api/placeholder/800/600?text=Зал+1+Общий+вид',
-      '/api/placeholder/800/600?text=Зал+1+Корт+1',
-      '/api/placeholder/800/600?text=Зал+1+Корт+2',
-      '/api/placeholder/800/600?text=Зал+1+Раздевалка',
-      '/api/placeholder/800/600?text=Зал+1+Освещение'
-    ],
-    videos: [
-      '/api/placeholder/video?text=Обзор+Зала+1',
-      '/api/placeholder/video?text=Игра+в+Зале+1'
-    ],
-    specifications: {
-      area: '400 м²',
-      height: '9 м',
-      flooring: 'Профессиональное покрытие Taraflex',
-      lighting: 'LED освещение 1000 лк',
-      ventilation: 'Принудительная вентиляция'
-    },
-    amenities: [
-      'Раздевалки с индивидуальными шкафчиками',
-      'Душевые кабины',
-      'Зона отдыха',
-      'Питьевые фонтанчики',
-      'Wi-Fi',
-      'Парковка'
-    ],
-    working_hours: {
-      weekdays: '06:00 - 23:00',
-      weekends: '08:00 - 22:00'
-    },
-    is_active: true
-  },
-  2: {
-    id: 2,
-    name: 'Зал 2',
-    courts_count: 7,
-    description: 'Большой зал с семью кортами для турниров и тренировок',
-    detailed_description: 'Зал 2 - наш главный турнирный зал, оборудованный семью профессиональными кортами. Здесь проводятся официальные соревнования и тренировки спортсменов высокого уровня. Зал оснащен трибунами для зрителей и современной звуковой системой.',
-    features: [
-      'Турнирные корты',
-      'Трибуны для зрителей',
-      'Профессиональная разметка',
-      'Система вентиляции',
-      'Звуковая система'
-    ],
-    price_per_hour: 180,
-    images: [
-      '/api/placeholder/800/600?text=Зал+2+Турнирный+вид',
-      '/api/placeholder/800/600?text=Зал+2+Трибуны',
-      '/api/placeholder/800/600?text=Зал+2+Корты',
-      '/api/placeholder/800/600?text=Зал+2+Звуковая+система',
-      '/api/placeholder/800/600?text=Зал+2+Освещение'
-    ],
-    videos: [
-      '/api/placeholder/video?text=Турнир+в+Зале+2',
-      '/api/placeholder/video?text=Тренировка+в+Зале+2'
-    ],
-    specifications: {
-      area: '1200 м²',
-      height: '12 м',
-      flooring: 'Турнирное покрытие BWF стандарт',
-      lighting: 'Профессиональное LED 1500 лк',
-      ventilation: 'Климат-контроль с рекуперацией'
-    },
-    amenities: [
-      'VIP раздевалки',
-      'Душевые с подогревом пола',
-      'Зона для разминки',
-      'Кафе',
-      'Трибуны на 200 мест',
-      'Профессиональная звуковая система',
-      'Табло',
-      'Wi-Fi',
-      'Охраняемая парковка'
-    ],
-    working_hours: {
-      weekdays: '06:00 - 23:00',
-      weekends: '08:00 - 22:00'
-    },
-    is_active: true
-  },
-  3: {
-    id: 3,
-    name: 'Зал 3',
-    courts_count: 7,
-    description: 'Современный зал с новейшим оборудованием',
-    detailed_description: 'Зал 3 - самый современный зал клуба с новейшими технологиями. Семь кортов оборудованы инновационным LED освещением и системой климат-контроля. VIP раздевалки и зона отдыха создают атмосферу премиум-класса.',
-    features: [
-      'Новейшее покрытие',
-      'LED освещение',
-      'Климат-контроль',
-      'VIP раздевалки',
-      'Зона отдыха'
-    ],
-    price_per_hour: 200,
-    images: [
-      '/api/placeholder/800/600?text=Зал+3+Премиум+вид',
-      '/api/placeholder/800/600?text=Зал+3+LED+освещение',
-      '/api/placeholder/800/600?text=Зал+3+VIP+раздевалка',
-      '/api/placeholder/800/600?text=Зал+3+Зона+отдыха',
-      '/api/placeholder/800/600?text=Зал+3+Климат+контроль'
-    ],
-    videos: [
-      '/api/placeholder/video?text=Обзор+Зала+3+Premium',
-      '/api/placeholder/video?text=Технологии+Зала+3'
-    ],
-    specifications: {
-      area: '1100 м²',
-      height: '11 м',
-      flooring: 'Инновационное покрытие Gerflor',
-      lighting: 'Умное LED освещение 1200 лк',
-      ventilation: 'Интеллектуальный климат-контроль'
-    },
-    amenities: [
-      'VIP раздевалки с сауной',
-      'Премиум душевые',
-      'Лаунж-зона',
-      'Мини-бар',
-      'Массажные кресла',
-      'Система очистки воздуха',
-      'Умное освещение',
-      'Premium Wi-Fi',
-      'Valet парковка'
-    ],
-    working_hours: {
-      weekdays: '06:00 - 23:00',
-      weekends: '08:00 - 22:00'
-    },
-    is_active: true
-  }
-};
+// Статические данные удалены - теперь загружаем из Supabase
 
 export default function HallPage() {
   const params = useParams();
   const router = useRouter();
   const hallId = parseInt(params.id as string);
-  const hall = hallsData[hallId];
 
+  const [hall, setHall] = useState<HallData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showBooking, setShowBooking] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     date: Date;
     time: string;
     court: number;
   } | null>(null);
+
+  useEffect(() => {
+    const fetchHall = async () => {
+      console.log('Loading hall data for ID:', hallId);
+      setLoading(true);
+
+      try {
+        const { data, error } = await supabase
+          .from('halls')
+          .select('*')
+          .eq('id', hallId)
+          .eq('is_active', true)
+          .single();
+
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+
+        if (data) {
+          console.log('Loaded hall from Supabase:', data.name);
+          setHall(data);
+        } else {
+          console.error('Hall not found with ID:', hallId);
+          router.push('/');
+        }
+      } catch (error) {
+        console.error('Error loading hall:', error);
+        router.push('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (hallId) {
+      fetchHall();
+    }
+  }, [hallId, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-altius-blue mx-auto mb-4"></div>
+          <p className="text-gray-600">Загрузка информации о зале...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!hall) {
     return (

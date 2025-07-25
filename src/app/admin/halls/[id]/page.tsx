@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ImageUploader from '@/components/ImageUploader';
-import { supabase, isSupabaseAvailable } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { 
   ArrowLeft,
   Save,
@@ -52,88 +52,32 @@ export default function AdminHallEditPage() {
   }, [hallId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchHall = async () => {
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('Loading hall data for ID:', hallId);
+    setLoading(true);
 
     try {
-      // Try Supabase with short timeout
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 2000)
-      );
-
-      const supabasePromise = supabase
+      const { data, error } = await supabase
         .from('halls')
         .select('*')
         .eq('id', hallId)
         .single();
 
-      const result = await Promise.race([supabasePromise, timeoutPromise]);
-      const { data, error } = result as { data: Hall | null; error: Error | null };
-
-      if (error) throw error;
-      if (data) {
-        setHall(data);
-        return;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
       }
-    } catch (error) {
-      console.error('Supabase not available, using fallback data:', error);
-    }
 
-    // Fallback data
-      const fallbackHalls = [
-        {
-          id: 1,
-          name: 'Зал 1',
-          courts_count: 3,
-          price_per_hour: 150,
-          description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
-          detailed_description: 'Зал 1 - это идеальное место для начинающих игроков и любителей бадминтона.',
-          features: ['Профессиональное покрытие', 'Отличное освещение', 'Кондиционирование воздуха'],
-          images: [],
-          videos: [],
-          specifications: { area: '300 м²', height: '9 м', flooring: 'Профессиональное покрытие' },
-          amenities: ['Раздевалки', 'Душевые', 'Парковка'],
-          working_hours: { weekdays: '06:00 - 23:00', weekends: '08:00 - 22:00' },
-          is_active: true
-        },
-        {
-          id: 2,
-          name: 'Зал 2',
-          courts_count: 7,
-          price_per_hour: 180,
-          description: 'Большой зал с семью кортами для турниров и тренировок',
-          detailed_description: 'Зал 2 - наш самый большой зал для турниров.',
-          features: ['Турнирные корты', 'Трибуны для зрителей'],
-          images: [],
-          videos: [],
-          specifications: { area: '700 м²', height: '12 м', flooring: 'Турнирное покрытие' },
-          amenities: ['VIP раздевалки', 'Душевые', 'Трибуны'],
-          working_hours: { weekdays: '06:00 - 23:00', weekends: '08:00 - 22:00' },
-          is_active: true
-        },
-        {
-          id: 3,
-          name: 'Зал 3',
-          courts_count: 7,
-          price_per_hour: 200,
-          description: 'Современный зал с новейшим оборудованием',
-          detailed_description: 'Зал 3 - наш новейший зал с современным оборудованием.',
-          features: ['Новейшее покрытие', 'LED освещение'],
-          images: [],
-          videos: [],
-          specifications: { area: '700 м²', height: '12 м', flooring: 'Инновационное покрытие' },
-          amenities: ['VIP раздевалки', 'Премиум душевые'],
-          working_hours: { weekdays: '06:00 - 23:00', weekends: '08:00 - 22:00' },
-          is_active: true
-        }
-      ];
-      
-      const fallbackHall = fallbackHalls.find(h => h.id === hallId);
-      if (fallbackHall) {
-        setHall(fallbackHall);
+      if (data) {
+        console.log('Loaded hall from Supabase:', data.name);
+        setHall(data);
       } else {
+        console.error('Hall not found with ID:', hallId);
         router.push('/admin/halls');
       }
+    } catch (error) {
+      console.error('Error loading hall:', error);
+      router.push('/admin/halls');
+    }
 
     setLoading(false);
   };

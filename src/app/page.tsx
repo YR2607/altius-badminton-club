@@ -7,7 +7,7 @@ import HallCard from '@/components/HallCard';
 import BookingCalendar from '@/components/BookingCalendar';
 import BookingForm from '@/components/BookingForm';
 import { Star, Users, Clock, MapPin, Phone, Mail, CheckCircle } from 'lucide-react';
-import { supabase, isSupabaseAvailable } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface BookingData {
   name: string;
@@ -46,67 +46,31 @@ export default function Home() {
 
   const fetchHalls = async () => {
     console.log('Loading halls data...');
+    setLoading(true);
 
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const { data, error } = await supabase
+        .from('halls')
+        .select('*')
+        .eq('is_active', true)
+        .order('id');
 
-    // Check if Supabase is configured
-    if (isSupabaseAvailable()) {
-      try {
-        // Try Supabase with short timeout
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 2000)
-        );
-
-        const supabasePromise = supabase
-          .from('halls')
-          .select('*')
-          .eq('is_active', true)
-          .order('id');
-
-        const result = await Promise.race([supabasePromise, timeoutPromise]);
-        const { data, error } = result as { data: Hall[] | null; error: Error | null };
-
-        if (error) throw error;
-        if (data && data.length > 0) {
-          setHalls(data);
-          setLoading(false);
-          return;
-        }
-      } catch (error) {
-        console.log('Supabase connection failed, using demo data');
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
       }
-    } else {
-      console.log('Using demo data (Supabase not configured)');
-    }
 
-    // Fallback data
-    setHalls([
-        {
-          id: 1,
-          name: 'Зал 1',
-          courts_count: 3,
-          price_per_hour: 150,
-          description: 'Уютный зал с профессиональными кортами для игры в бадминтон',
-          features: ['Профессиональное покрытие', 'Отличное освещение', 'Кондиционирование воздуха', 'Раздевалки с душем']
-        },
-        {
-          id: 2,
-          name: 'Зал 2',
-          courts_count: 7,
-          price_per_hour: 180,
-          description: 'Большой зал с семью кортами для турниров и тренировок',
-          features: ['Турнирные корты', 'Трибуны для зрителей', 'Профессиональная разметка', 'Система вентиляции', 'Звуковая система']
-        },
-        {
-          id: 3,
-          name: 'Зал 3',
-          courts_count: 7,
-          price_per_hour: 200,
-          description: 'Современный зал с новейшим оборудованием',
-          features: ['Новейшее покрытие', 'LED освещение', 'Климат-контроль', 'VIP раздевалки', 'Зона отдыха']
-        }
-      ]);
+      if (data && data.length > 0) {
+        console.log('Loaded halls from Supabase:', data.length);
+        setHalls(data);
+      } else {
+        console.log('No active halls found in database');
+        setHalls([]);
+      }
+    } catch (error) {
+      console.error('Error loading halls:', error);
+      setHalls([]);
+    }
 
     setLoading(false);
   };

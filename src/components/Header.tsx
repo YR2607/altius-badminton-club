@@ -47,35 +47,35 @@ export default function Header() {
           <nav className="hidden md:flex space-x-8">
             <button
               onClick={() => handleNavigation('/')}
-              className="text-gray-700 hover:text-altius-blue transition-colors"
+              className="text-gray-700 hover:text-altius-blue transition-colors cursor-pointer"
             >
               Главная
             </button>
             <button
               onClick={() => handleNavigation('/about')}
-              className="text-gray-700 hover:text-altius-lime transition-colors"
+              className="text-gray-700 hover:text-altius-lime transition-colors cursor-pointer"
             >
               О нас
             </button>
             <button
               onClick={() => handleNavigation('#halls')}
-              className="text-gray-700 hover:text-altius-orange transition-colors"
+              className="text-gray-700 hover:text-altius-orange transition-colors cursor-pointer"
             >
               Залы
             </button>
             <button
               onClick={() => handleNavigation('/services')}
-              className="text-gray-700 hover:text-altius-blue transition-colors"
+              className="text-gray-700 hover:text-altius-blue transition-colors cursor-pointer"
             >
               Услуги
             </button>
             <button
               onClick={() => handleNavigation('/contact')}
-              className="text-gray-700 hover:text-altius-lime transition-colors"
+              className="text-gray-700 hover:text-altius-lime transition-colors cursor-pointer"
             >
               Контакты
             </button>
-            <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors">
+            <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors cursor-pointer">
               Админ
             </Link>
           </nav>
@@ -94,7 +94,7 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden"
+            className="md:hidden cursor-pointer"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -111,35 +111,35 @@ export default function Header() {
             <nav className="flex flex-col space-y-4">
               <button
                 onClick={() => handleNavigation('/')}
-                className="text-gray-700 hover:text-altius-blue transition-colors text-left"
+                className="text-gray-700 hover:text-altius-blue transition-colors text-left cursor-pointer"
               >
                 Главная
               </button>
               <button
                 onClick={() => handleNavigation('/about')}
-                className="text-gray-700 hover:text-altius-lime transition-colors text-left"
+                className="text-gray-700 hover:text-altius-lime transition-colors text-left cursor-pointer"
               >
                 О нас
               </button>
               <button
                 onClick={() => handleNavigation('#halls')}
-                className="text-gray-700 hover:text-altius-orange transition-colors text-left"
+                className="text-gray-700 hover:text-altius-orange transition-colors text-left cursor-pointer"
               >
                 Залы
               </button>
               <button
                 onClick={() => handleNavigation('/services')}
-                className="text-gray-700 hover:text-altius-blue transition-colors text-left"
+                className="text-gray-700 hover:text-altius-blue transition-colors text-left cursor-pointer"
               >
                 Услуги
               </button>
               <button
                 onClick={() => handleNavigation('/contact')}
-                className="text-gray-700 hover:text-altius-lime transition-colors text-left"
+                className="text-gray-700 hover:text-altius-lime transition-colors text-left cursor-pointer"
               >
                 Контакты
               </button>
-              <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors">
+              <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors cursor-pointer">
                 Админ
               </Link>
               <div className="pt-4 border-t border-gray-200">

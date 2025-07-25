@@ -188,12 +188,31 @@ export default function AdminHallEditPage() {
     }
   };
 
-  const handleImagesUpdate = (images: string[]) => {
+  const handleImagesUpdate = async (images: string[]) => {
     if (hall) {
+      // Обновляем локальное состояние
       setHall({
         ...hall,
         images
       });
+
+      // Сохраняем изображения в базу данных
+      try {
+        const { error } = await supabase
+          .from('halls')
+          .update({ images })
+          .eq('id', hall.id);
+
+        if (error) {
+          console.error('Error saving images to database:', error);
+          alert('Ошибка сохранения изображений в базу данных');
+        } else {
+          console.log('Images saved to database successfully');
+        }
+      } catch (error) {
+        console.error('Error updating images:', error);
+        alert('Ошибка при обновлении изображений');
+      }
     }
   };
 

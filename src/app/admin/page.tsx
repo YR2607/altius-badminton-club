@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Filter,
   Settings,
-  Building
+  Building,
+  FileText,
+  PenTool
 } from 'lucide-react';
 
 interface Booking {
@@ -157,10 +159,43 @@ export default function AdminPage() {
             </div>
           </Link>
 
-          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-altius-lime">
+          {/* Управление постами */}
+          <Link
+            href="/admin/posts"
+            className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow border-l-4 border-altius-lime cursor-pointer"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="bg-altius-lime/10 p-3 rounded-lg">
+                  <FileText className="w-6 h-6 text-altius-lime" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Блог и События</h3>
+                  <p className="text-gray-600">Управление постами</p>
+                </div>
+              </div>
+              <PenTool className="w-5 h-5 text-gray-400" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Всего постов:</span>
+                <span className="font-medium">-</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Опубликованных:</span>
+                <span className="font-medium text-green-600">-</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Черновиков:</span>
+                <span className="font-medium text-yellow-600">-</span>
+              </div>
+            </div>
+          </Link>
+
+          <div className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-altius-orange">
             <div className="flex items-center">
-              <div className="bg-altius-lime/10 p-3 rounded-lg">
-                <Calendar className="w-6 h-6 text-altius-lime" />
+              <div className="bg-altius-orange/10 p-3 rounded-lg">
+                <Calendar className="w-6 h-6 text-altius-orange" />
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-semibold text-gray-900">Бронирования</h3>

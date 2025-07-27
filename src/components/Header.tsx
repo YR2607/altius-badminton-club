@@ -75,6 +75,12 @@ export default function Header() {
             >
               Контакты
             </button>
+            <button
+              onClick={() => handleNavigation('/blog')}
+              className="text-gray-700 hover:text-altius-blue transition-colors cursor-pointer"
+            >
+              Блог
+            </button>
             <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors cursor-pointer">
               Админ
             </Link>
@@ -138,6 +144,12 @@ export default function Header() {
                 className="text-gray-700 hover:text-altius-lime transition-colors text-left cursor-pointer"
               >
                 Контакты
+              </button>
+              <button
+                onClick={() => handleNavigation('/blog')}
+                className="text-gray-700 hover:text-altius-blue transition-colors text-left cursor-pointer"
+              >
+                Блог
               </button>
               <Link href="/admin" className="text-gray-700 hover:text-altius-orange transition-colors cursor-pointer">
                 Админ

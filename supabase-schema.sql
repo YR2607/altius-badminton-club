@@ -151,3 +151,112 @@ CREATE POLICY "Anyone can update hall images" ON storage.objects
 
 CREATE POLICY "Anyone can delete hall images" ON storage.objects
     FOR DELETE USING (bucket_id = 'hall-images');
+
+-- ========================================
+-- BLOG POSTS AND EVENTS SCHEMA
+-- ========================================
+
+-- Create posts table for blog and events
+CREATE TABLE IF NOT EXISTS posts (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  featured_image TEXT,
+  category VARCHAR(50) NOT NULL CHECK (category IN ('post', 'event')),
+  status VARCHAR(20) DEFAULT 'published' CHECK (status IN ('draft', 'published', 'archived')),
+  author_name VARCHAR(100) DEFAULT 'Altius Admin',
+  tags TEXT[],
+  event_date TIMESTAMP WITH TIME ZONE, -- Только для событий
+  event_location VARCHAR(255), -- Только для событий
+  meta_description TEXT,
+  views_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
+
+-- Create function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_posts_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS update_posts_updated_at ON posts;
+CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON posts
+    FOR EACH ROW EXECUTE FUNCTION update_posts_updated_at_column();
+
+-- Insert sample blog posts and events
+INSERT INTO posts (title, slug, excerpt, content, category, featured_image, tags, event_date, event_location) VALUES
+('Добро пожаловать в клуб Altius!', 'welcome-to-altius', 'Мы рады приветствовать вас в нашем современном бадминтонном клубе в Кишиневе.',
+'<h2>Добро пожаловать в Altius!</h2><p>Наш клуб предлагает лучшие условия для игры в бадминтон в Кишиневе. Современные залы, профессиональное оборудование и дружелюбная атмосфера ждут вас!</p><p>Мы предлагаем:</p><ul><li>3 современных зала с профессиональным покрытием</li><li>Аренда ракеток и воланов</li><li>Тренировки для всех уровней</li><li>Турниры и соревнования</li></ul>',
+'post', '/api/placeholder/800/600?text=Добро+пожаловать+в+Altius', ARRAY['новости', 'клуб'], NULL, NULL),
+
+('Открытие нового зала №3', 'new-hall-opening', 'Мы с гордостью объявляем об открытии нашего третьего зала с самым современным оборудованием!',
+'<h2>Новый зал уже открыт!</h2><p>Зал №3 оснащен:</p><ul><li>Инновационным LED освещением</li><li>Системой климат-контроля</li><li>VIP раздевалками</li><li>Зоной отдыха</li></ul><p>Приходите опробовать новые возможности!</p>',
+'post', '/api/placeholder/800/600?text=Новый+зал+3', ARRAY['новости', 'залы'], NULL, NULL),
+
+('Турнир "Кубок Altius 2024"', 'altius-cup-2024', 'Приглашаем всех любителей бадминтона принять участие в нашем ежегодном турнире!',
+'<h2>Кубок Altius 2024</h2><p>Ежегодный турнир нашего клуба пройдет в феврале 2024 года. Регистрация уже открыта!</p><h3>Категории:</h3><ul><li>Мужчины (одиночный разряд)</li><li>Женщины (одиночный разряд)</li><li>Смешанные пары</li><li>Юниоры до 18 лет</li></ul><p>Призовой фонд: 10,000 лей</p><p>Для регистрации обращайтесь к администратору.</p>',
+'event', '/api/placeholder/800/600?text=Турнир+Кубок+Altius', ARRAY['турнир', 'соревнования'], '2024-02-15 10:00:00+02', 'Зал №2, Altius'),
+
+('Мастер-класс от чемпиона', 'master-class-champion', 'Специальный мастер-класс от чемпиона Молдовы по бадминтону!',
+'<h2>Мастер-класс от профессионала</h2><p>Не упустите уникальную возможность поучиться у лучших! Чемпион Молдовы проведет мастер-класс для игроков всех уровней.</p><h3>Программа:</h3><ul><li>Техника подачи</li><li>Тактика игры</li><li>Физическая подготовка</li><li>Ответы на вопросы</li></ul><p>Количество мест ограничено!</p>',
+'event', '/api/placeholder/800/600?text=Мастер+класс', ARRAY['обучение', 'мастер-класс'], '2024-01-20 14:00:00+02', 'Зал №1, Altius'),
+
+('Новогодний турнир для детей', 'new-year-kids-tournament', 'Праздничный турнир для юных спортсменов с призами и подарками!',
+'<h2>Новогодний праздник для детей</h2><p>Приглашаем детей от 8 до 16 лет на праздничный турнир! Веселые игры, соревнования и подарки от Деда Мороза!</p><h3>Возрастные группы:</h3><ul><li>8-10 лет</li><li>11-13 лет</li><li>14-16 лет</li></ul><p>Каждый участник получит подарок!</p>',
+'event', '/api/placeholder/800/600?text=Детский+турнир', ARRAY['дети', 'турнир', 'новый год'], '2024-01-05 11:00:00+02', 'Все залы, Altius')
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  excerpt = EXCLUDED.excerpt,
+  content = EXCLUDED.content,
+  category = EXCLUDED.category,
+  featured_image = EXCLUDED.featured_image,
+  tags = EXCLUDED.tags,
+  event_date = EXCLUDED.event_date,
+  event_location = EXCLUDED.event_location;
+
+-- Enable Row Level Security for posts
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for posts (public read access for published posts)
+CREATE POLICY "Anyone can view published posts" ON posts
+    FOR SELECT USING (status = 'published');
+
+-- Временно разрешаем всем создавать и редактировать посты (для демо)
+CREATE POLICY "Anyone can insert posts" ON posts
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Anyone can update posts" ON posts
+    FOR UPDATE USING (true);
+
+CREATE POLICY "Anyone can delete posts" ON posts
+    FOR DELETE USING (true);
+
+-- Create storage bucket for post images
+INSERT INTO storage.buckets (id, name, public) VALUES ('post-images', 'post-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Policies for post images storage bucket
+CREATE POLICY "Anyone can view post images" ON storage.objects
+    FOR SELECT USING (bucket_id = 'post-images');
+
+CREATE POLICY "Anyone can upload post images" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'post-images');
+
+CREATE POLICY "Anyone can update post images" ON storage.objects
+    FOR UPDATE USING (bucket_id = 'post-images');
+
+CREATE POLICY "Anyone can delete post images" ON storage.objects
+    FOR DELETE USING (bucket_id = 'post-images');

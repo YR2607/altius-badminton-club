@@ -167,7 +167,7 @@ export default function AdminPostsPage() {
             ].map(({ key, label, color }) => (
               <button
                 key={key}
-                onClick={() => setFilter(key as any)}
+                onClick={() => setFilter(key as 'all' | 'post' | 'event' | 'draft' | 'published')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   filter === key
                     ? `bg-${color === 'gray' ? 'gray' : color === 'lime' ? 'altius-lime' : color === 'orange' ? 'altius-orange' : color === 'green' ? 'green' : 'yellow'}-${color === 'gray' ? '800' : '500'} text-white`

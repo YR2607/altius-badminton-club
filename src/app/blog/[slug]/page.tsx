@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -28,13 +28,7 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
 
-  useEffect(() => {
-    if (slug) {
-      fetchPost();
-    }
-  }, [slug]);
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     console.log('Loading post with slug:', slug);
     setLoading(true);
 
@@ -74,7 +68,13 @@ export default function BlogPostPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug, router]);
+
+  useEffect(() => {
+    if (slug) {
+      fetchPost();
+    }
+  }, [slug, fetchPost]);
 
   const fetchRelatedPosts = async (currentPost: Post) => {
     try {
@@ -93,7 +93,7 @@ export default function BlogPostPage() {
       }
 
       if (data) {
-        setRelatedPosts(data);
+        setRelatedPosts(data as Post[]);
       }
     } catch (error) {
       console.error('Error fetching related posts:', error);

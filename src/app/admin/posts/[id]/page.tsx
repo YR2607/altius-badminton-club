@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -47,13 +47,7 @@ export default function EditPostPage() {
     meta_description: ''
   });
 
-  useEffect(() => {
-    if (postId) {
-      fetchPost();
-    }
-  }, [postId]);
-
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     console.log('Loading post with ID:', postId);
     setLoading(true);
 
@@ -97,7 +91,13 @@ export default function EditPostPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId, router]);
+
+  useEffect(() => {
+    if (postId) {
+      fetchPost();
+    }
+  }, [postId, fetchPost]);
 
   const generateSlug = (title: string) => {
     return title

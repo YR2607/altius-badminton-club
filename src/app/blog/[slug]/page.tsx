@@ -135,7 +135,7 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-altius-blue mx-auto mb-4"></div>
             <p className="text-gray-600">Загрузка поста...</p>
@@ -150,7 +150,7 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Пост не найден</h1>
             <Link
@@ -170,7 +170,7 @@ export default function BlogPostPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <div className="mb-8">
           <Link
@@ -182,85 +182,110 @@ export default function BlogPostPage() {
           </Link>
         </div>
 
-        {/* Article */}
-        <article className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Featured Image */}
-          {post.featured_image && (
-            <div className="aspect-video overflow-hidden">
-              <img
-                src={post.featured_image}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-
-          <div className="p-8">
-            {/* Category and Meta */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    post.category === 'event'
-                      ? 'bg-altius-orange text-white'
-                      : 'bg-altius-lime text-white'
-                  }`}
-                >
-                  {post.category === 'event' ? 'Событие' : 'Новость'}
-                </span>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <Eye className="w-4 h-4 mr-1" />
-                  {post.views_count + 1}
-                </div>
+        {/* Article Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main Content */}
+          <article className="lg:col-span-3 bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Featured Image */}
+            {post.featured_image && (
+              <div className="aspect-video overflow-hidden">
+                <img
+                  src={post.featured_image}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <button
-                onClick={sharePost}
-                className="flex items-center text-gray-500 hover:text-altius-blue transition-colors"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-            </div>
+            )}
 
+            <div className="p-8 lg:p-12">
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
               {post.title}
             </h1>
 
-            {/* Event Details */}
+            {/* Content */}
+            <div
+              className="prose prose-lg prose-blue max-w-none"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            </div>
+          </article>
+
+          {/* Sidebar */}
+          <aside className="lg:col-span-1 space-y-6">
+            {/* Post Info */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Информация</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      post.category === 'event'
+                        ? 'bg-altius-orange text-white'
+                        : 'bg-altius-lime text-white'
+                    }`}
+                  >
+                    {post.category === 'event' ? 'Событие' : 'Новость'}
+                  </span>
+                  <button
+                    onClick={sharePost}
+                    className="flex items-center text-gray-500 hover:text-altius-blue transition-colors"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="flex items-center text-gray-500 text-sm">
+                  <Eye className="w-4 h-4 mr-2" />
+                  <span>{post.views_count + 1} просмотров</span>
+                </div>
+
+                <div className="flex items-center text-gray-500 text-sm">
+                  <User className="w-4 h-4 mr-2" />
+                  <span>{post.author_name}</span>
+                </div>
+
+                <div className="flex items-center text-gray-500 text-sm">
+                  <Clock className="w-4 h-4 mr-2" />
+                  <span>{formatDate(post.created_at)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Event Details in Sidebar */}
             {post.category === 'event' && (
-              <div className="bg-altius-orange/10 border border-altius-orange/20 rounded-lg p-6 mb-8">
+              <div className="bg-altius-orange/10 border border-altius-orange/20 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-altius-orange mb-4">
                   Детали события
                 </h3>
                 <div className="space-y-3">
                   {post.event_date && (
-                    <div className="flex items-center text-gray-700">
-                      <Calendar className="w-5 h-5 mr-3 text-altius-orange" />
-                      <span className="font-medium">Дата и время:</span>
-                      <span className="ml-2">{formatEventDate(post.event_date)}</span>
+                    <div className="flex items-start text-gray-700">
+                      <Calendar className="w-5 h-5 mr-3 text-altius-orange mt-0.5" />
+                      <div>
+                        <span className="font-medium block">Дата и время:</span>
+                        <span className="text-sm">{formatEventDate(post.event_date)}</span>
+                      </div>
                     </div>
                   )}
                   {post.event_location && (
-                    <div className="flex items-center text-gray-700">
-                      <MapPin className="w-5 h-5 mr-3 text-altius-orange" />
-                      <span className="font-medium">Место:</span>
-                      <span className="ml-2">{post.event_location}</span>
+                    <div className="flex items-start text-gray-700">
+                      <MapPin className="w-5 h-5 mr-3 text-altius-orange mt-0.5" />
+                      <div>
+                        <span className="font-medium block">Место:</span>
+                        <span className="text-sm">{post.event_location}</span>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Content */}
-            <div 
-              className="prose prose-lg max-w-none mb-8"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-
-            {/* Tags */}
+            {/* Tags in Sidebar */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Теги</h3>
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Теги</h3>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag, index) => (
                     <span
@@ -274,20 +299,8 @@ export default function BlogPostPage() {
                 </div>
               </div>
             )}
-
-            {/* Author and Date */}
-            <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-6">
-              <div className="flex items-center">
-                <User className="w-4 h-4 mr-2" />
-                <span>Автор: {post.author_name}</span>
-              </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2" />
-                <span>Опубликовано: {formatDate(post.created_at)}</span>
-              </div>
-            </div>
-          </div>
-        </article>
+          </aside>
+        </div>
 
         {/* Related Posts */}
         {relatedPosts.length > 0 && (

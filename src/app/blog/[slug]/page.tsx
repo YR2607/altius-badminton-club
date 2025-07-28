@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PostImageSlider from '@/components/PostImageSlider';
 import { supabase } from '@/lib/supabase';
 import { Post } from '@/types';
 import { 
@@ -131,6 +132,35 @@ export default function BlogPostPage() {
     }
   };
 
+  const renderContentWithSliders = (content: string, galleryImages: string[] = []) => {
+    // Replace slider placeholders with actual sliders
+    const parts = content.split('<div data-slider="gallery"></div>');
+
+    if (parts.length === 1) {
+      // No sliders, return original content
+      return <div dangerouslySetInnerHTML={{ __html: content }} />;
+    }
+
+    return (
+      <div>
+        {parts.map((part, index) => (
+          <div key={index}>
+            {part && <div dangerouslySetInnerHTML={{ __html: part }} />}
+            {index < parts.length - 1 && galleryImages.length > 0 && (
+              <div className="my-8">
+                <PostImageSlider
+                  images={galleryImages}
+                  alt={post?.title || 'Gallery'}
+                  className="rounded-lg"
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -204,10 +234,9 @@ export default function BlogPostPage() {
             </h1>
 
             {/* Content */}
-            <div
-              className="prose prose-lg prose-blue max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <div className="prose prose-lg prose-blue max-w-none">
+              {renderContentWithSliders(post.content, post.gallery_images)}
+            </div>
 
             </div>
           </article>

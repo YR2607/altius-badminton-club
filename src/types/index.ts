@@ -38,6 +38,7 @@ export interface Post {
   excerpt?: string;
   content: string;
   featured_image?: string;
+  gallery_images?: string[]; // Additional images for slider
   category: 'post' | 'event';
   status: 'draft' | 'published' | 'archived';
   author_name: string;
@@ -56,6 +57,7 @@ export interface PostFormData {
   excerpt: string;
   content: string;
   featured_image: string;
+  gallery_images: string[]; // Additional images for slider
   category: 'post' | 'event';
   status: 'draft' | 'published' | 'archived';
   author_name: string;

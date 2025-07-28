@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PostImageUploader from '@/components/PostImageUploader';
+import PostGalleryManager from '@/components/PostGalleryManager';
 import { supabase } from '@/lib/supabase';
 import { PostFormData } from '@/types';
 import { 
@@ -30,6 +31,7 @@ export default function NewPostPage() {
     excerpt: '',
     content: '',
     featured_image: '',
+    gallery_images: [],
     category: 'post',
     status: 'draft',
     author_name: 'Altius Admin',
@@ -279,6 +281,14 @@ export default function NewPostPage() {
               <PostImageUploader
                 currentImage={formData.featured_image}
                 onImageUpdate={(imageUrl) => setFormData(prev => ({ ...prev, featured_image: imageUrl }))}
+              />
+            </div>
+
+            {/* Gallery Images */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <PostGalleryManager
+                images={formData.gallery_images}
+                onImagesUpdate={(images) => setFormData(prev => ({ ...prev, gallery_images: images }))}
               />
             </div>
 
